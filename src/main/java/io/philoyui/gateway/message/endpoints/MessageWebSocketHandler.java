@@ -1,5 +1,6 @@
 package io.philoyui.gateway.message.endpoints;
 
+import io.philoyui.gateway.message.service.AppInfoManager;
 import io.philoyui.gateway.message.service.SessionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +21,9 @@ public class MessageWebSocketHandler extends TextWebSocketHandler {
     @Autowired
     private SessionManager sessionManager;
 
+    @Autowired
+    private AppInfoManager appInfoManager;
+
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
@@ -28,11 +32,13 @@ public class MessageWebSocketHandler extends TextWebSocketHandler {
 
         String appKey = (String)attributes.get("appKey");
 
-        sessionManager.online(appKey,session);
-
-        LOG.info("应用已上线：" + appKey);
+        if(appInfoManager.existAppKey(appKey)){
+            sessionManager.online(appKey,session);
+            LOG.info("应用已上线：" + appKey);
+        }
 
         super.afterConnectionEstablished(session);
+
 
     }
 
