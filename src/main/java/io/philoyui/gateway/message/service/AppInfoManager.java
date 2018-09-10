@@ -4,7 +4,14 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class AppInfoManager {
+
     public boolean existAppKey(String appKey) {
-        return true;
+
+        if(appKey.equalsIgnoreCase("appkey122112")){
+            return true;
+        }
+
+        return false;
+
     }
 }

@@ -1,5 +1,6 @@
 package io.philoyui.gateway.message.endpoints;
 
+import io.philoyui.gateway.message.exp.GmosException;
 import io.philoyui.gateway.message.service.AppInfoManager;
 import io.philoyui.gateway.message.service.SessionManager;
 import org.slf4j.Logger;
@@ -35,10 +36,10 @@ public class MessageWebSocketHandler extends TextWebSocketHandler {
         if(appInfoManager.existAppKey(appKey)){
             sessionManager.online(appKey,session);
             LOG.info("应用已上线：" + appKey);
+            super.afterConnectionEstablished(session);
+        } else {
+            throw new GmosException("校验失败");
         }
-
-        super.afterConnectionEstablished(session);
-
 
     }
 
