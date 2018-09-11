@@ -1,5 +1,9 @@
 package io.philoyui.gateway.message.interceptor;
 
+import io.philoyui.gateway.message.service.AppInfoManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.http.server.ServletServerHttpRequest;
@@ -12,6 +16,11 @@ import java.util.Map;
 
 @Component
 public class MessageHandshakeInterceptor extends HttpSessionHandshakeInterceptor {
+
+    private final Logger LOG = LoggerFactory.getLogger(this.getClass());
+
+    @Autowired
+    private AppInfoManager appInfoManager;
 
     /**
      *
@@ -33,10 +42,16 @@ public class MessageHandshakeInterceptor extends HttpSessionHandshakeInterceptor
 
         String appKey = servletRequest.getParameter("appKey");
 
-        attributes.put("appKey",appKey);
-
-        return super.beforeHandshake(request, response, wsHandler, attributes);
+        if(appInfoManager.existAppKey(appKey)){
+            attributes.put("appKey",appKey);
+            return super.beforeHandshake(request, response, wsHandler, attributes);
+        } else {
+            LOG.error("不存在的应用：" + appKey);
+            return false;
+        }
 
     }
+
+
 
 }
