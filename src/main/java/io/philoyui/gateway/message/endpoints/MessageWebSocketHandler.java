@@ -30,16 +30,10 @@ public class MessageWebSocketHandler extends TextWebSocketHandler {
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
 
         Map<String, Object> attributes = session.getAttributes();
-
         String appKey = (String)attributes.get("appKey");
-
-        if(appInfoManager.existAppKey(appKey)){
-            sessionManager.online(appKey,session);
-            LOG.info("应用已上线：" + appKey);
-            super.afterConnectionEstablished(session);
-        } else {
-            throw new GmosException("校验失败");
-        }
+        sessionManager.online(appKey,session);
+        LOG.info("应用已上线：" + appKey);
+        super.afterConnectionEstablished(session);
 
     }
 
