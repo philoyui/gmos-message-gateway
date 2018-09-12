@@ -1,5 +1,6 @@
 package io.philoyui.gateway.message.service;
 
+import io.philoyui.gateway.message.request.SubscribeRequest;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -13,5 +14,9 @@ public class AppInfoManager {
 
         return false;
 
+    }
+
+    public String generateToken(SubscribeRequest subscribeRequest) {
+        return "11111111111111";
     }
 }
