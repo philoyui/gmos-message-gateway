@@ -1,6 +1,6 @@
 package io.philoyui.gateway.message.interceptor;
 
-import io.philoyui.gateway.message.service.AppInfoManager;
+import io.philoyui.gateway.message.service.ApplicationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +20,7 @@ public class MessageHandshakeInterceptor extends HttpSessionHandshakeInterceptor
     private final Logger LOG = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    private AppInfoManager appInfoManager;
+    private ApplicationService applicationService;
 
     /**
      *
@@ -42,7 +42,7 @@ public class MessageHandshakeInterceptor extends HttpSessionHandshakeInterceptor
 
         String appKey = servletRequest.getParameter("appKey");
 
-        if(appInfoManager.existAppKey(appKey)){
+        if(applicationService.existAppKey(appKey)){
             attributes.put("appKey",appKey);
             return super.beforeHandshake(request, response, wsHandler, attributes);
         } else {

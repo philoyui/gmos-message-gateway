@@ -1,7 +1,6 @@
 package io.philoyui.gateway.message.endpoints;
 
-import io.philoyui.gateway.message.exp.GmosException;
-import io.philoyui.gateway.message.service.AppInfoManager;
+import io.philoyui.gateway.message.service.ApplicationService;
 import io.philoyui.gateway.message.service.SessionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +22,7 @@ public class MessageWebSocketHandler extends TextWebSocketHandler {
     private SessionManager sessionManager;
 
     @Autowired
-    private AppInfoManager appInfoManager;
+    private ApplicationService applicationService;
 
 
     @Override
