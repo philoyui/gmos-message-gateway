@@ -39,19 +39,11 @@ public class MessageHandshakeInterceptor extends HttpSessionHandshakeInterceptor
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
 
         HttpServletRequest servletRequest = ((ServletServerHttpRequest) request).getServletRequest();
-
-        String appKey = servletRequest.getParameter("appKey");
-
-        if(applicationService.existAppKey(appKey)){
-            attributes.put("appKey",appKey);
-            return super.beforeHandshake(request, response, wsHandler, attributes);
-        } else {
-            LOG.error("不存在的应用：" + appKey);
-            return false;
-        }
+        String token = servletRequest.getParameter("token");
+        attributes.put("token",token);
+        return super.beforeHandshake(request, response, wsHandler, attributes);
 
     }
-
 
 
 }

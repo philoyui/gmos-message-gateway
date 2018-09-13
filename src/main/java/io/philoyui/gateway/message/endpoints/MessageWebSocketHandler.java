@@ -29,9 +29,8 @@ public class MessageWebSocketHandler extends TextWebSocketHandler {
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
 
         Map<String, Object> attributes = session.getAttributes();
-        String appKey = (String)attributes.get("appKey");
-        sessionManager.online(appKey,session);
-        LOG.info("应用已上线：" + appKey);
+        String token = (String)attributes.get("token");
+        sessionManager.online(token,session);
         super.afterConnectionEstablished(session);
 
     }

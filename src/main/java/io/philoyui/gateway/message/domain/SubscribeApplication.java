@@ -1,5 +1,6 @@
 package io.philoyui.gateway.message.domain;
 
+import javax.persistence.Entity;
 import java.io.Serializable;
 
 /**
@@ -8,6 +9,7 @@ import java.io.Serializable;
  *
  * Created by yangyu-ds on 2018/9/12.
  */
+@Entity
 public class SubscribeApplication implements Serializable{
 
     private String secret;
