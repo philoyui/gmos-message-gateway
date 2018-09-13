@@ -1,6 +1,5 @@
 package io.philoyui.gateway.message.endpoints;
 
-import io.philoyui.gateway.message.service.ApplicationService;
 import io.philoyui.gateway.message.service.SessionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,10 +19,6 @@ public class MessageWebSocketHandler extends TextWebSocketHandler {
 
     @Autowired
     private SessionManager sessionManager;
-
-    @Autowired
-    private ApplicationService applicationService;
-
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
