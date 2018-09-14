@@ -1,4 +1,4 @@
-package io.philoyui.gateway.message.request;
+package io.philoyui.gateway.message.domain;
 
 import io.philoyui.gateway.message.utils.SignUtils;
 
@@ -87,5 +87,9 @@ public class SubscribeRequest implements Serializable {
 
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public String buildRedisQueueName() {
+        return "msg_queue_" + appKey + "_" + groupName;
     }
 }

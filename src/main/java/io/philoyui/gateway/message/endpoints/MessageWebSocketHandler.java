@@ -1,6 +1,8 @@
 package io.philoyui.gateway.message.endpoints;
 
-import io.philoyui.gateway.message.service.SessionManager;
+import io.philoyui.gateway.message.domain.SubscribeRequest;
+import io.philoyui.gateway.message.service.AccessTokenService;
+import io.philoyui.gateway.message.service.WebSocketSessionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,47 +20,39 @@ public class MessageWebSocketHandler extends TextWebSocketHandler {
     private final Logger LOG = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    private SessionManager sessionManager;
+    private WebSocketSessionManager webSocketSessionManager;
+
+    @Autowired
+    private AccessTokenService accessTokenService;
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
 
         Map<String, Object> attributes = session.getAttributes();
-        String token = (String)attributes.get("token");
-        sessionManager.online(token,session);
-        super.afterConnectionEstablished(session);
 
+        String token = (String)attributes.get("token");
+
+        SubscribeRequest subscribeRequest = accessTokenService.resolveToken(token);
+
+        webSocketSessionManager.startAndFetchMessage(subscribeRequest,session);
+
+        super.afterConnectionEstablished(session);
     }
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-
         LOG.info("收到消息：" + message.getPayload());
-
         super.handleTextMessage(session, message);
-
     }
 
     @Override
     public void handleTransportError(WebSocketSession session, Throwable exception) throws Exception {
-
-//        exception.printStackTrace();
-
         super.handleTransportError(session, exception);
     }
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-
-        Map<String, Object> attributes = session.getAttributes();
-
-        String appKey = (String)attributes.get("appKey");
-
-        sessionManager.offline(appKey,session);
-
-        LOG.info("应用已下线：" + appKey);
-
+        webSocketSessionManager.offline(session);
         super.afterConnectionClosed(session, status);
-
     }
 }
