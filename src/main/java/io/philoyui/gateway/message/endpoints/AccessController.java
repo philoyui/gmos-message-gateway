@@ -1,8 +1,8 @@
-package io.philoyui.gateway.message.controller;
+package io.philoyui.gateway.message.endpoints;
 
 import io.philoyui.gateway.message.domain.ResponseEntity;
 import io.philoyui.gateway.message.exp.GmosException;
-import io.philoyui.gateway.message.domain.SubscribeRequest;
+import io.philoyui.gateway.message.domain.ConnectRequest;
 import io.philoyui.gateway.message.service.AccessTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,12 +24,12 @@ public class AccessController {
      *
      * 传入app_key,secret,group 注册一个客户端并生成Token，
      *
-     * @param subscribeRequest
+     * @param connectRequest
      */
     @GetMapping("/router/ws/token")
-    public ResponseEntity<String> access(SubscribeRequest subscribeRequest){
+    public ResponseEntity<String> access(ConnectRequest connectRequest){
         try {
-            String token = accessTokenService.generateToken(subscribeRequest);
+            String token = accessTokenService.generateToken(connectRequest);
             return ResponseEntity.successResponse(token);
         }catch (GmosException e){
             return ResponseEntity.errorResponse(10,e.getMessage());

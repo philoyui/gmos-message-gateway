@@ -1,6 +1,8 @@
 package io.philoyui.gateway.message.service;
 
-import io.philoyui.gateway.message.domain.SubscribeRequest;
+import io.philoyui.gateway.message.domain.AckResponse;
+import io.philoyui.gateway.message.domain.ConnectRequest;
+import io.philoyui.gateway.message.interfaze.ApplicationCommandService;
 import io.philoyui.gateway.message.thread.MessageFetcher;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketSession;
@@ -9,10 +11,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
-public class WebSocketSessionManager {
+public class WebSocketSessionService {
 
     private Map<String,MessageFetcher> messageFetchers = new ConcurrentHashMap<>();
-
 
     /**
      *
@@ -20,13 +21,14 @@ public class WebSocketSessionManager {
      *
      * 应用开启抓取消息线程
      *
-     * @param subscribeRequest
      * @param session
+     * @param connectRequest
      */
-    public void startAndFetchMessage(SubscribeRequest subscribeRequest, WebSocketSession session) {
-        MessageFetcher messageFetcher = new MessageFetcher(session, subscribeRequest);
+    public void online(WebSocketSession session, ConnectRequest connectRequest) {
+        MessageFetcher messageFetcher = new MessageFetcher(session, connectRequest);
         new Thread(messageFetcher).start();
         messageFetchers.put(session.getId(),messageFetcher);
+
     }
 
     /**
@@ -36,5 +38,18 @@ public class WebSocketSessionManager {
     public void offline(WebSocketSession session) {
         MessageFetcher messageFetcher = messageFetchers.remove(session.getId());
         messageFetcher.stopFetcher();
+    }
+
+    public Map<String, MessageFetcher> getMessageFetchers() {
+        return messageFetchers;
+    }
+
+    /**
+     * 处理Ack请求
+     * @param session
+     * @param ackResponse
+     */
+    public void handleAckResponse(WebSocketSession session, AckResponse ackResponse) {
+
     }
 }

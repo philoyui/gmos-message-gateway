@@ -3,6 +3,9 @@ package io.philoyui.gateway.message.domain;
 import java.io.Serializable;
 
 /**
+ *
+ * restful请求响应对象
+ *
  * Created by yangyu-ds on 2018/5/16.
  */
 public class ResponseEntity<T> implements Serializable {

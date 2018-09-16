@@ -1,8 +1,11 @@
 package io.philoyui.gateway.message.endpoints;
 
-import io.philoyui.gateway.message.domain.SubscribeRequest;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import io.philoyui.gateway.message.domain.AckResponse;
+import io.philoyui.gateway.message.domain.ConnectRequest;
 import io.philoyui.gateway.message.service.AccessTokenService;
-import io.philoyui.gateway.message.service.WebSocketSessionManager;
+import io.philoyui.gateway.message.service.WebSocketSessionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,16 +17,25 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.util.Map;
 
+/**
+ *
+ * 处理WebSocket请求核心类
+ *
+ */
 @Component
-public class MessageWebSocketHandler extends TextWebSocketHandler {
+public class WebSocketEndpoints extends TextWebSocketHandler {
 
     private final Logger LOG = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    private WebSocketSessionManager webSocketSessionManager;
+    private WebSocketSessionService webSocketSessionService;
 
     @Autowired
     private AccessTokenService accessTokenService;
+
+
+    private Gson gson = new GsonBuilder().create();
+
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
@@ -32,16 +44,31 @@ public class MessageWebSocketHandler extends TextWebSocketHandler {
 
         String token = (String)attributes.get("token");
 
-        SubscribeRequest subscribeRequest = accessTokenService.resolveToken(token);
+        ConnectRequest connectRequest = accessTokenService.resolveToken(token);
 
-        webSocketSessionManager.startAndFetchMessage(subscribeRequest,session);
+        webSocketSessionService.online(session, connectRequest);
 
         super.afterConnectionEstablished(session);
     }
 
+
+    /**
+     *
+     * 收到客户端发送的消息，ACK，FAIL
+     *
+     * @param session
+     * @param message
+     * @throws Exception
+     */
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-        LOG.info("收到消息：" + message.getPayload());
+
+        String payload = message.getPayload();
+
+        AckResponse ackResponse = gson.fromJson(payload, AckResponse.class);
+
+        webSocketSessionService.handleAckResponse(session,ackResponse);
+
         super.handleTextMessage(session, message);
     }
 
@@ -52,7 +79,9 @@ public class MessageWebSocketHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-        webSocketSessionManager.offline(session);
+
+        webSocketSessionService.offline(session);
+
         super.afterConnectionClosed(session, status);
     }
 }

@@ -6,7 +6,12 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class SubscribeRequest implements Serializable {
+/**
+ *
+ * 连接请求
+ *
+ */
+public class ConnectRequest implements Serializable {
 
     /**
      * 键值
@@ -33,7 +38,7 @@ public class SubscribeRequest implements Serializable {
      */
     private long timestamp = System.currentTimeMillis();
 
-    public SubscribeRequest(String appKey, String secret, String groupName) {
+    public ConnectRequest(String appKey, String secret, String groupName) {
 
         this.appKey = appKey;
         this.groupName = groupName;

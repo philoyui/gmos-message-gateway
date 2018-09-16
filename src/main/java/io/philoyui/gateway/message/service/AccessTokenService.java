@@ -3,9 +3,9 @@ package io.philoyui.gateway.message.service;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import io.philoyui.gateway.message.domain.MessageApp;
+import io.philoyui.gateway.message.domain.Application;
+import io.philoyui.gateway.message.domain.ConnectRequest;
 import io.philoyui.gateway.message.exp.GmosException;
-import io.philoyui.gateway.message.domain.SubscribeRequest;
 import io.philoyui.gateway.message.utils.RedisConstant;
 import io.philoyui.gateway.message.utils.SignUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +29,7 @@ public class AccessTokenService {
     private GcacheClient gcacheClient;
 
     @Autowired
-    private MessageAppService messageAppService;
+    private ApplicationService applicationService;
 
     private Gson gson = new GsonBuilder().create();
 
@@ -37,18 +37,18 @@ public class AccessTokenService {
      *
      * 为请求应用生成访问令牌，放到缓存中
      *
-     * @param subscribeRequest
+     * @param connectRequest
      * @return
      */
-    public String generateToken(SubscribeRequest subscribeRequest) {
+    public String generateToken(ConnectRequest connectRequest) {
 
-        MessageApp messageApp = checkAndGetApp(subscribeRequest.getAppKey());
+        Application application = checkAndGetApp(connectRequest.getAppKey());
 
-        checkSign(subscribeRequest, messageApp.getSecret());
+        checkSign(connectRequest, application.getSecret());
 
         String token = UUID.randomUUID().toString();
 
-        gcacheClient.setex(buildTokenRedisKey(token),5 * 60,gson.toJson(subscribeRequest));
+        gcacheClient.setex(buildTokenRedisKey(token),5 * 60,gson.toJson(connectRequest));
 
         return token;
     }
@@ -66,19 +66,19 @@ public class AccessTokenService {
      *
      * 对接收到的请求进行签名
      *
-     * @param subscribeRequest
+     * @param connectRequest
      * @param secret
      * @return
      */
-    private void checkSign(SubscribeRequest subscribeRequest, String secret) {
+    private void checkSign(ConnectRequest connectRequest, String secret) {
 
         Map<String,String> parameters = new TreeMap<>();
-        parameters.put("appKey",subscribeRequest.getAppKey());
-        parameters.put("groupName",subscribeRequest.getGroupName());
-        parameters.put("version",subscribeRequest.getVersion());
-        parameters.put("timestamp",String.valueOf(subscribeRequest.getTimestamp()));
+        parameters.put("appKey", connectRequest.getAppKey());
+        parameters.put("groupName", connectRequest.getGroupName());
+        parameters.put("version", connectRequest.getVersion());
+        parameters.put("timestamp",String.valueOf(connectRequest.getTimestamp()));
         String serverSign = SignUtils.sign(parameters,secret);
-        if(subscribeRequest.getSign().equalsIgnoreCase(serverSign)){
+        if(connectRequest.getSign().equalsIgnoreCase(serverSign)){
             throw new GmosException("签名错误，可能是appKey或secret信息不正确");
         }
 
@@ -89,9 +89,9 @@ public class AccessTokenService {
      * @param appKey
      * @return
      */
-    private MessageApp checkAndGetApp(String appKey) {
+    private Application checkAndGetApp(String appKey) {
 
-        MessageApp subscribeApplication = messageAppService.findByAppKey(appKey);
+        Application subscribeApplication = applicationService.findByAppKey(appKey);
 
         if(subscribeApplication==null){
             throw new GmosException("appKey对应的应用不存在");
@@ -106,12 +106,12 @@ public class AccessTokenService {
      * @param token
      * @return
      */
-    public SubscribeRequest resolveToken(String token) {
+    public ConnectRequest resolveToken(String token) {
 
         String redisTokenResult = gcacheClient.get(buildTokenRedisKey(token));
 
         if(!Strings.isNullOrEmpty(redisTokenResult)){
-            return gson.fromJson(redisTokenResult,SubscribeRequest.class);
+            return gson.fromJson(redisTokenResult, ConnectRequest.class);
         }
 
         throw new GmosException("请求token找不到" + token);

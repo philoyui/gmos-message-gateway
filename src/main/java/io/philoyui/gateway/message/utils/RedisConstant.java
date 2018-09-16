@@ -5,7 +5,9 @@ package io.philoyui.gateway.message.utils;
  */
 public class RedisConstant {
 
-    public static final String TOKEN_KEY = "messageAccessToken";
+    public static final String TOKEN_KEY = "message_access_token";
+
+    public static final String GROUP_QUEUE = "group_queue";
 
     private RedisConstant() {
         //

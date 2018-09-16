@@ -51,6 +51,12 @@
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>cn.com.gome.cloud</groupId>
+            <artifactId>gmos-interface-gateway</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <build>

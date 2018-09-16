@@ -6,6 +6,9 @@ import org.springframework.context.annotation.Configuration;
 import redis.GcacheClient;
 
 /**
+ *
+ * Gcache缓存配置
+ *
  * Created by yangyu-ds on 2018/9/14.
  */
 @Configuration

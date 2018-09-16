@@ -1,6 +1,6 @@
 package io.philoyui.gateway.message.config;
 
-import io.philoyui.gateway.message.endpoints.MessageWebSocketHandler;
+import io.philoyui.gateway.message.endpoints.WebSocketEndpoints;
 import io.philoyui.gateway.message.interceptor.MessageHandshakeInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -15,14 +15,14 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 public class WebSocketConfig implements WebSocketConfigurer {
 
     @Autowired
-    private MessageWebSocketHandler messageWebSocketHandler;
+    private WebSocketEndpoints webSocketEndpoints;
 
     @Autowired
     private MessageHandshakeInterceptor messageHandshakeInterceptor;
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry webSocketHandlerRegistry) {
-        webSocketHandlerRegistry.addHandler(messageWebSocketHandler,"/endpoints").addInterceptors(messageHandshakeInterceptor);
+        webSocketHandlerRegistry.addHandler(webSocketEndpoints,"/endpoints").addInterceptors(messageHandshakeInterceptor);
     }
 
 }
